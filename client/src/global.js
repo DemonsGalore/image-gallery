@@ -22,6 +22,7 @@ export default createGlobalStyle`
   }
   main {
     display: flex;
+    flex-direction: column;
     flex-grow: 1;
     padding: 1rem;
   }
