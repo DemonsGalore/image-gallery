@@ -9,3 +9,5 @@
 TODO:
 - store images in database
 - axios max file size
+- style progressbar
+- index.js in /util (backend)

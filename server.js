@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const multer = require('multer');
 const isEmpty = require('./util/is-empty');
+const checkForImageType = require('./util/check-for-image');
 
 // set storage engine
 const storage = multer.diskStorage({
@@ -16,24 +17,9 @@ const upload = multer({
   storage,
   limits: { fileSize: 5242880 }, // 5MB in Byte
   fileFilter: (req, file, cb) => {
-    checkFileType(file, cb);
+    checkForImageType(file, cb);
   }
 }).single('file');
-
-// check file type
-const checkFileType = (file, cb) => {
-  const filetypes = /jpeg|jpg|png|gif|webp/;
-  // check ext
-  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-  // check mime 
-  const mimetype = filetypes.test(file.mimetype);
-
-  if(mimetype && extname) {
-    return cb(null, true);
-  } else {
-    cb({ message: 'Images only!' });
-  }
-};
 
 // ExpressServer initialization
 const app = express();
@@ -43,6 +29,7 @@ app.disable('x-powered-by');
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+// upload route
 app.post('/upload', (req, res) => {
   upload(req, res, (error) => {
     

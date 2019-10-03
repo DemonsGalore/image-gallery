@@ -2,7 +2,9 @@ import React from 'react';
 
 const Gallery = props => {
   return (
-    <h1>Gallery</h1>
+    <>
+      <h1>Gallery</h1>
+    </>
   );
 }
 
