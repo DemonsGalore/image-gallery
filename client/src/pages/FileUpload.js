@@ -13,16 +13,7 @@ const FileUpload = () => {
   const [fileName, setFileName] = useState('Choose file');
   const [uploadedFile, setUploadedFile] = useState({});
   const [uploadPercentage, setUploadPercentage] = useState(0);
-  const [message, setMessage] = useState('');
-
-  const toastConfig = {
-    position: "bottom-right",
-    autoClose: 3000,
-    hideProgressBar: false,
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: false,
-  };
+  const [message, setMessage] = useState({});
 
   const isFirstRender = useRef(true);
 
@@ -32,34 +23,43 @@ const FileUpload = () => {
       return;
     }
 
+    const toastConfig = {
+      position: "bottom-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: false,
+    };
+
     if (!isEmpty(message)) {
-      if (!isEmpty(uploadedFile)) {
+      if (message.success) {
         toast.success(
-          <><FontAwesomeIcon icon={faCheckCircle} size="1x" />&nbsp;{message}</>,
+          <><FontAwesomeIcon icon={faCheckCircle} size="1x" />&nbsp;{message.text}</>,
           toastConfig
         );
       } else {
         toast.error(
-          <><FontAwesomeIcon icon={faExclamationCircle} size="1x" />&nbsp;{message}</>,
+          <><FontAwesomeIcon icon={faExclamationCircle} size="1x" />&nbsp;{message.text}</>,
           toastConfig
         );
       }
     }
-  }, [message])
+  }, [message]);
 
   const onChange = e => {
     setFile(e.target.files[0]);
     setFileName(e.target.files[0].name);
     setUploadedFile({});
     setUploadPercentage(0);
-    setMessage('');
+    setMessage({});
   };
 
   const onSubmit = async e => {
     e.preventDefault();
     
     setUploadedFile({});
-    setMessage('');
+    setMessage({});
 
     const formData = new FormData();
     formData.append('file', file);
@@ -77,16 +77,16 @@ const FileUpload = () => {
       const { fileName, filePath } = await res.data;
 
       setUploadedFile({ fileName, filePath });
-      setMessage('File uploaded');
+      setMessage({ text: 'File uploaded', success: true });
     } catch (error) {
       if (error.response.status === 500) {
         if (error.response.data.message) {
-          setMessage(error.response.data.message);
+          setMessage({ text: error.response.data.message, success: false });
         } else {
-          setMessage('There was a problem with the server.');
+          setMessage({ text: 'There was a problem with the server.', success: false });
         }
       } else {
-        setMessage(error.response.data.message);
+        setMessage({ text: error.response.data.message, success: false });
       }
     }
 
@@ -94,11 +94,16 @@ const FileUpload = () => {
     setFileName('Choose file');
   };
 
+  const clickButton = () => {
+    document.getElementById('image-upload').click();
+  };
+
   return (
     <>
       <form onSubmit={onSubmit}>
         <div>
-          <input type="file" id="image-upload" name="image" onChange={onChange} />
+          <input type="file" id="image-upload" name="image" onChange={onChange} hidden />
+          <input type="button" value="Browse..." onClick={clickButton} />
           <label htmlFor="image-upload">{fileName}</label>
         </div>
 
@@ -127,6 +132,6 @@ const FileUpload = () => {
       />
     </>
   );
-}
+};
 
 export default FileUpload;
