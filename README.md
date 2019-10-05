@@ -10,3 +10,4 @@ TODO:
 - axios max file size
 - style progressbar
 - index.js in /util (backend)
+- store images with file extension to lower case

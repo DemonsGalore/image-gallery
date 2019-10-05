@@ -2,16 +2,16 @@ const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
 const multer = require('multer');
-const isEmpty = require('./util/is-empty');
-const checkForImageType = require('./util/check-for-image');
-
-const { mongoURI } = require('./config/keys');
 
 const { Image } = require('./models');
+const isEmpty = require('./util/is-empty');
+const checkForImageType = require('./util/check-for-image');
+const { sharpWebP, sharpWebPThumbnail, sharpJPEGThumbnail } = require('./util/sharp');
+const { mongoURI } = require('./config/keys');
 
 // set storage engine
 const storage = multer.diskStorage({
-  destination: './client/public/uploads/',
+  destination: './client/public/uploads/originals',
   filename: (req, file, cb) => {
     cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
   }
@@ -55,7 +55,13 @@ app.post('/upload', (req, res) => {
     try {
       const result = await newImage.save();
 
-      return res.json({ fileName: result.filename, filePath: `/uploads/${result.filename}` });
+      // save as webP
+      sharpWebP(result.path, `./client/public/uploads/webp/${result.name}.webp`);
+      // save thumbnail as WebP and JPG
+      sharpWebPThumbnail(result.path, `./client/public/uploads/thumbnails/${result.name}-thumbnail.webp`);
+      sharpJPEGThumbnail(result.path, `./client/public/uploads/thumbnails/${result.name}-thumbnail.jpg`);
+
+      return res.json({ fileName: result.filename, filePath: `./uploads/originals/${result.filename}` });
     } catch (error) {
       throw error;
     }
