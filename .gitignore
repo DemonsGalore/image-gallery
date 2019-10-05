@@ -1,5 +1,6 @@
 package-lock.json
 /client/public/uploads/
+/config/keys_dev.js
 
 # Logs
 logs

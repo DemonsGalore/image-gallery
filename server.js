@@ -1,8 +1,13 @@
 const express = require('express');
 const path = require('path');
+const mongoose = require('mongoose');
 const multer = require('multer');
 const isEmpty = require('./util/is-empty');
 const checkForImageType = require('./util/check-for-image');
+
+const { mongoURI } = require('./config/keys');
+
+const { Image } = require('./models');
 
 // set storage engine
 const storage = multer.diskStorage({
@@ -31,8 +36,7 @@ app.use(express.json());
 
 // upload route
 app.post('/upload', (req, res) => {
-  upload(req, res, (error) => {
-    
+  upload(req, res, async (error) => {
     if (error) {
       return res.status(500).send(error);
     }
@@ -42,13 +46,34 @@ app.post('/upload', (req, res) => {
     }
 
     const { file } = req;
+    const name = path.parse(file.filename).name;
 
-    // TODO: store in database
+    const newImage = new Image(req.file);
+    newImage.name = name;
 
-    return res.json({ fileName: file.filename, filePath: `/uploads/${file.filename}` });
+    // store image in database
+    try {
+      const result = await newImage.save();
+
+      return res.json({ fileName: result.filename, filePath: `/uploads/${result.filename}` });
+    } catch (error) {
+      throw error;
+    }
   });
 });
 
-// start server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server started at http://localhost:${PORT}`));
+// connect to MongoDB
+mongoose
+  .connect(mongoURI, {
+    useNewUrlParser: true,
+    useFindAndModify: false,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log('MongoDB connected.');
+    // start server
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () =>
+      console.log(`Server started at http://localhost:${PORT}`));
+  })
+  .catch(error => console.log("Error", error));
