@@ -68,6 +68,20 @@ app.post('/upload', (req, res) => {
   });
 });
 
+// get all images
+app.get('/images', async (req, res) => {
+  const errors = {};
+
+  const images = await Image.find();
+
+  if (!images) {
+    errors.noimages = 'There are no iamges.';
+    return res.status(404).json(errors);
+  }
+
+  return res.json(images)
+});
+
 // connect to MongoDB
 mongoose
   .connect(mongoURI, {
