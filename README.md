@@ -5,6 +5,7 @@
 - mongoDB - database
 - multer - fileupload
 - sharp - imagecompression
+- fslightbox - lightbox
 
 TODO:
 - axios max file size
@@ -14,3 +15,4 @@ TODO:
 - Keyframe-Regel wurde wegen ungültigem Selektor ignoriert. (Spinner)
 - png/gif support for gallery
 - title for image / alt for images
+- webp support for lightbox
