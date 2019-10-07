@@ -13,7 +13,7 @@ const { mongoURI } = require('./config/keys');
 const storage = multer.diskStorage({
   destination: './client/public/uploads/originals',
   filename: (req, file, cb) => {
-    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname).toLowerCase());
   }
 });
 
