@@ -26,7 +26,7 @@ const upload = multer({
   }
 }).single('file');
 
-// ExpressServer initialization
+// express initialization
 const app = express();
 app.disable('x-powered-by');
 

@@ -25,6 +25,6 @@ const imageSchema = new Schema({
   size: {
     type: Number,
   },
-}, {timestamps: true });
+}, { timestamps: true });
 
 module.exports = Image = mongoose.model('images', imageSchema);
